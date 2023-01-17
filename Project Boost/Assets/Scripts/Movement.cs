@@ -43,6 +43,9 @@ public class Movement : MonoBehaviour
 
     void ApplyRotation(float rotationThisFrame)
     {
+        // 로켓 제어를 할 때 회전 고정, 물리 시스템이 회전을 변경하지 못하게 
+        rb.freezeRotation = true; // freezing rotation so we can manually rotate
         transform.Rotate(Vector3.forward * rotationThisFrame * Time.deltaTime);
+        rb.freezeRotation = false; // unfreezing rotatin so the physics system can take over
     }
 }
