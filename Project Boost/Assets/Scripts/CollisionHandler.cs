@@ -1,5 +1,5 @@
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
     void OnCollisionEnter(Collision other) 
@@ -17,8 +17,14 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("You picked up Fuel");
                 break;
             default:
-                Debug.Log("Sorry, you blew up! You bumped into Obstacles");
+                ReloadLevel();
                 break;
         }
+    }
+
+    void ReloadLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;   // 현재 활동하고 있는 씬의 index (build setting에 있는) 반환 
+        SceneManager.LoadScene(currentSceneIndex);   
     }
 }
