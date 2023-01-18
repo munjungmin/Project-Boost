@@ -3,10 +3,21 @@ using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
     [SerializeField] float levelLoadDelay = 2f;
-    
+    [SerializeField] AudioClip crash;
+    [SerializeField] AudioClip success;
+
+    AudioSource audioSource;
+
+    bool isTransitioning = false;  // 충돌이 발생하면 아무것도 안되고, 못하게 하는 변수 
+
+    void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
     void OnCollisionEnter(Collision other) 
     {
-        //tag는 상수 
+        if(isTransitioning) { return; }
+
         switch(other.gameObject.tag)
         {
             case "Friendly":
@@ -17,24 +28,32 @@ public class CollisionHandler : MonoBehaviour
                 break;
             default:
                 StartCrashSequence();
+                isTransitioning = true;
                 break;
         }
+        
+        
     }
 
     void StartCrashSequence()
-    {
-        // todo add SFX upon crash
-        // todo add particle effect upon crash
+    {   
+        isTransitioning = true;
+        audioSource.Stop();
+        audioSource.PlayOneShot(crash, 0.3f);
         GetComponent<Movement>().enabled = false;  // 게임오버 시 플레이어의 이동 제어권을 뺏기 위해 movement 비활성화 
-        GetComponent<AudioSource>().Stop();   // movement 비활성화로 spacebar를 누르지 않을 때가 실행이 안돼서..? 직접 멈춤
+        // todo add particle effect upon crash
+
         Invoke("ReloadLevel", levelLoadDelay);
     }
 
     void StartClearSequence()
     {
-        // todo add SFX upon crash
-        // todo add particle effect upon crash
+        isTransitioning = true;
+        audioSource.Stop();
+        audioSource.PlayOneShot(success);
+        // todo add particle effect upon success
         GetComponent<Movement>().enabled = false;
+
         Invoke("LoadNextLevel", levelLoadDelay);
     }
 
@@ -43,7 +62,7 @@ public class CollisionHandler : MonoBehaviour
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;   
         SceneManager.LoadScene(currentSceneIndex);   
     }
-    
+
     void LoadNextLevel()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;    
