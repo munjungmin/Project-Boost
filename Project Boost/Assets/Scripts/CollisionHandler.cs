@@ -6,6 +6,9 @@ public class CollisionHandler : MonoBehaviour
     [SerializeField] AudioClip crash;
     [SerializeField] AudioClip success;
 
+    [SerializeField] ParticleSystem crashParticles;
+    [SerializeField] ParticleSystem successParticles;
+
     AudioSource audioSource;
 
     bool isTransitioning = false;  // 충돌이 발생하면 아무것도 안되고, 못하게 하는 변수 
@@ -31,8 +34,6 @@ public class CollisionHandler : MonoBehaviour
                 isTransitioning = true;
                 break;
         }
-        
-        
     }
 
     void StartCrashSequence()
@@ -40,8 +41,8 @@ public class CollisionHandler : MonoBehaviour
         isTransitioning = true;
         audioSource.Stop();
         audioSource.PlayOneShot(crash, 0.3f);
-        GetComponent<Movement>().enabled = false;  // 게임오버 시 플레이어의 이동 제어권을 뺏기 위해 movement 비활성화 
-        // todo add particle effect upon crash
+        crashParticles.Play();
+        GetComponent<Movement>().enabled = false;  
 
         Invoke("ReloadLevel", levelLoadDelay);
     }
@@ -51,7 +52,7 @@ public class CollisionHandler : MonoBehaviour
         isTransitioning = true;
         audioSource.Stop();
         audioSource.PlayOneShot(success);
-        // todo add particle effect upon success
+        successParticles.Play();
         GetComponent<Movement>().enabled = false;
 
         Invoke("LoadNextLevel", levelLoadDelay);
