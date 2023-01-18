@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class CollisionHandler : MonoBehaviour
 {
+    [SerializeField] float levelLoadDelay = 2f;
+    
     void OnCollisionEnter(Collision other) 
     {
         //tag는 상수 
@@ -11,15 +13,29 @@ public class CollisionHandler : MonoBehaviour
                 Debug.Log("This thing is Friendly");
                 break;
             case "Finish":
-                LoadNextLevel();
-                break;
-            case "Fuel":
-                Debug.Log("You picked up Fuel");
+                StartClearSequence();
                 break;
             default:
-                ReloadLevel();
+                StartCrashSequence();
                 break;
         }
+    }
+
+    void StartCrashSequence()
+    {
+        // todo add SFX upon crash
+        // todo add particle effect upon crash
+        GetComponent<Movement>().enabled = false;  // 게임오버 시 플레이어의 이동 제어권을 뺏기 위해 movement 비활성화 
+        GetComponent<AudioSource>().Stop();   // movement 비활성화로 spacebar를 누르지 않을 때가 실행이 안돼서..? 직접 멈춤
+        Invoke("ReloadLevel", levelLoadDelay);
+    }
+
+    void StartClearSequence()
+    {
+        // todo add SFX upon crash
+        // todo add particle effect upon crash
+        GetComponent<Movement>().enabled = false;
+        Invoke("LoadNextLevel", levelLoadDelay);
     }
 
     void ReloadLevel()
@@ -27,6 +43,7 @@ public class CollisionHandler : MonoBehaviour
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;   
         SceneManager.LoadScene(currentSceneIndex);   
     }
+    
     void LoadNextLevel()
     {
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;    
