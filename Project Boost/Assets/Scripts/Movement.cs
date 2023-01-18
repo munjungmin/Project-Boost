@@ -12,6 +12,10 @@ public class Movement : MonoBehaviour
     [SerializeField] float rotationThrust = 100f;
     [SerializeField] AudioClip mainEngine;
 
+    [SerializeField] ParticleSystem mainEngineParticles;
+    [SerializeField] ParticleSystem leftThrusterParticles;
+    [SerializeField] ParticleSystem rightThrusterParticles;
+
     Rigidbody rb;
     AudioSource audioSource;
 
@@ -36,10 +40,15 @@ public class Movement : MonoBehaviour
             {
                 audioSource.PlayOneShot(mainEngine);
             }
+            if(!mainEngineParticles.isPlaying)
+            {
+                mainEngineParticles.Play();
+            }
         }
         else
         {
             audioSource.Stop();
+            mainEngineParticles.Stop();
         }
 
     }
@@ -49,11 +58,25 @@ public class Movement : MonoBehaviour
         if(Input.GetKey(KeyCode.A))  // 왼쪽에 우선권 = 양쪽을 동시에 누르면 왼쪽으로 감 
         {
             ApplyRotation(rotationThrust);
+            if(!rightThrusterParticles.isPlaying)
+            {
+                rightThrusterParticles.Play();
+            }
         }
         else if(Input.GetKey(KeyCode.D))
         {
             ApplyRotation(-rotationThrust);
+            if(!leftThrusterParticles.isPlaying)
+            {
+                leftThrusterParticles.Play();
+            }
         }
+        else
+        {
+            rightThrusterParticles.Stop();
+            leftThrusterParticles.Stop();
+        }
+        
     }
 
     void ApplyRotation(float rotationThisFrame)
@@ -64,3 +87,4 @@ public class Movement : MonoBehaviour
         rb.freezeRotation = false; // unfreezing rotatin so the physics system can take over
     }
 }
+
